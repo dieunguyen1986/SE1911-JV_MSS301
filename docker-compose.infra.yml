@@ -1,0 +1,4 @@
+name: talenthub
+networks:
+  talenthub-net:
+    driver: bridge

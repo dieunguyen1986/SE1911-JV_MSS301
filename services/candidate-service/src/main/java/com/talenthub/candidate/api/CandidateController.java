@@ -1,35 +1,30 @@
 package com.talenthub.candidate.api;
 
+import com.talenthub.candidate.api.dto.RegisterCandidateRequest;
+import com.talenthub.candidate.application.command.RegisterCandidateCommand;
+import com.talenthub.candidate.application.usecase.RegisterCandidateUseCase;
+import com.talenthub.candidate.domain.Candidate;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/candidates")
+@RequestMapping(ApiPaths.CANDIDATES)
 @RequiredArgsConstructor
 public class CandidateController {
+    private final RegisterCandidateUseCase registerUseCase;
 
-    private final RestTemplate restTemplate;
+    @PostMapping
+    public ResponseEntity<UUID> register(@Valid @RequestBody RegisterCandidateRequest req) {
+        UUID id = registerUseCase.execute(new RegisterCandidateCommand(req.fullName(), req.email(), req.phone(), req.address()));
 
-    @GetMapping("/ping")
-    public Map<?, ?> ping(){
-        return Map.of("status","ok",
-                "message", "Candidate service hello world!"
-                );
-    }
-
-    @GetMapping("/getting-jobs")
-    public Map<?, ?> getJob(){
-
-        return Map.of(
-                "message", "Get all of jobs",
-                "data", restTemplate.getForEntity("http://localhost:8081/api/v1/jobs", List.class).getBody()
-        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 }
