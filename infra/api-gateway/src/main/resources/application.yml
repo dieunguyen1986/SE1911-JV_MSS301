@@ -13,11 +13,22 @@ spring:
               predicates:
                 - name: Path
                   args:
-                    pattern: /api/v1/jobs/**
+                    pattern: /api/v1/public/jobs/**
                 - name: Header
                   args:
                     header: X-Client-Type
                     regex: Web
+#              filters:
+#                - name: RequestRateLimiter
+#                  args:
+#                    # Số lượng token được nạp lại vào giỏ trong 1 giây (Tốc độ trung bình)
+#                    redis-rate-limiter.replenishRate: 10
+#                    # Sức chứa tối đa của giỏ (Cho phép bùng nổ - Burst trong 1 giây tối đa bao nhiêu)
+#                    redis-rate-limiter.burstCapacity: 20
+#                    # Mỗi request tốn bao nhiêu token
+#                    redis-rate-limiter.requestedTokens: 1
+#                    # SpEL
+
             - id: candidate-service
               uri: http://localhost:8082
               predicates:
@@ -62,7 +73,8 @@ spring:
     endpoints:
       web:
         exposure:
-          includes: "*"
-#            - health
-#            - info
-#            - gateway
+          includes:
+            - health
+            - info
+            - gateway
+
